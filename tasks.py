@@ -4,13 +4,13 @@ import threading
 
 def countdown(count):
     while count >= 0:
-        print("{} Count down {}".format(threading.current_thread(), count))
+        print("{} Count down {}".format(threading.current_thread().name, count))
         count -= 1
         time.sleep(1)
 
 def countup(count):
     while count <= 10:
-        print("{} Count up {}".format(threading.current_thread(), count))
+        print("{} Count up {}".format(threading.current_thread().name, count))
         count += 1
         time.sleep(1)
 
