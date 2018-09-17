@@ -45,7 +45,12 @@ class ConsumerThread(threading.Thread):
 
 
 producer = ProducerThread()
+producer.daemon = True
 producer.start()
 
 consumer = ConsumerThread()
+consumer.daemon = True
 consumer.start()
+
+while True:
+    time.sleep(1)
