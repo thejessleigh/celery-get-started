@@ -1,8 +1,10 @@
 from celery import Celery
 
-app = Celery('tasks', backend=None, broker='redis://localhost:6379')
+app = Celery('tasks', backend='redis://localhost:6379', broker='redis://localhost:6379')
 
 
 @app.task(name='tasks.add')
 def add(x, y):
-    print("{} + {} = {}".format(x, y, x + y))
+    total = x + y
+    print("{} + {} = {}".format(x, y, total))
+    return total
