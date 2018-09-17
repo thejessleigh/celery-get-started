@@ -1,7 +1,13 @@
+class NumericalInputError(Exception):
+    pass
+
+
 while True:
     try:
-        num = int(input("Please input a number"))
+        num = input("Please input a number")
+        if not num.isdigit():
+            raise NumericalInputError()
         print(num)
         break
-    except ValueError:
+    except NumericalInputError:
         print('invalid input for number. Please try again')
