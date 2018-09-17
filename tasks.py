@@ -1,23 +1,33 @@
-import time
 import threading
 
+counter_buffer = 0
+counter_lock = threading.Lock()
 
-def countdown(count):
-    while count >= 0:
-        print("{} Count down {}".format(threading.current_thread().name, count))
-        count -= 1
-        time.sleep(1)
+COUNTER_MAX = 100
 
-def countup(count):
-    while count <= 10:
-        print("{} Count up {}".format(threading.current_thread().name, count))
-        count += 1
-        time.sleep(1)
+def consumer1_counter():
+    global counter_buffer
+    for i in range(COUNTER_MAX):
+        counter_lock.acquire()
+        counter_buffer += 1
+        print(threading.current_thread().name, counter_buffer)
+        counter_lock.release()
 
-t1 = threading.Thread(name='countdown', args=(10,), target=countdown)
+def consumer2_counter():
+    global counter_buffer
+    for i in range(COUNTER_MAX):
+        counter_lock.acquire()
+        counter_buffer += 1
+        print(threading.current_thread().name, counter_buffer)
+        counter_lock.release()
+
+t1 = threading.Thread(target=consumer1_counter)
+t2 = threading.Thread(target=consumer2_counter)
+
 t1.start()
-
-t2 = threading.Thread(name='countdown', args=(0,), target=countup)
 t2.start()
 
-print("complete")
+t1.join()
+t2.join()
+
+print(counter_buffer)
