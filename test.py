@@ -11,3 +11,5 @@ while True:
         break
     except NumericalInputError:
         print('invalid input for number. Please try again')
+    finally:
+        print("Heyo! We've completed a full cycle")
