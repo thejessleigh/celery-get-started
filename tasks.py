@@ -1,25 +1,51 @@
+import random
+import time
 import threading
 
-counter_buffer = 0
-counter_lock = threading.Lock()
 
-COUNTER_MAX = 100
+queue = []
+MAX_ITEMS = 10
 
-
-def create_consumers(consumer_count):
-    for i in range(consumer_count):
-        t = threading.Thread(target=consumer_action)
-        t.start()
-        t.join()
+condition = threading.Condition()
 
 
-def consumer_action():
-    global counter_buffer
-    for i in range(COUNTER_MAX):
-        counter_lock.acquire()
-        counter_buffer += 1
-        counter_lock.release()
+class ProducerThread(threading.Thread):
+    def run(self):
+        numbers = range(5)
+        global queue
+
+        while True:
+            condition.acquire()
+            if len(queue) == MAX_ITEMS:
+                print("Queue is full, producer is waiting")
+                condition.wait()
+                print("Space in queue, Consumer notified producer")
+            number = random.choice(numbers)
+            queue.append(number)
+            print("Produced {}".format(number))
+            condition.notify()
+            condition.release()
+            time.sleep(random.random())
 
 
-create_consumers(10)
-print(counter_buffer)
+class ConsumerThread(threading.Thread):
+    def run(self):
+        global queue
+        while True:
+            condition.acquire()
+            if not queue:
+                print("Nothing in queue, Consumer is waiting")
+                condition.wait()
+                print("Producer added something to the queue and notified the consumer")
+
+            number = queue.pop(0)
+            print("consumed {}".format(number))
+            condition.release()
+            time.sleep(random.random())
+
+
+producer = ProducerThread()
+producer.start()
+
+consumer = ConsumerThread()
+consumer.start()
